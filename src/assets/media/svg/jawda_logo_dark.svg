@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 340" width="1000" height="340">
+  <defs>
+    <style>
+      .word   { font-family: Georgia, 'Playfair Display', 'Times New Roman', serif; font-weight: 600; fill: #F6F1E4; }
+      .arabic { font-family: 'Noto Naskh Arabic', 'Traditional Arabic', Tahoma, Arial, sans-serif; fill: #D9B25F; }
+      .tag    { font-family: Georgia, 'Times New Roman', serif; fill: #C9C2AC; }
+    </style>
+  </defs>
+
+  <!-- Wordmark: J A W D A -->
+  <text x="172" y="190" font-size="150" class="word">J</text>
+  <text x="261" y="190" font-size="150" class="word">A</text>
+  <text x="390" y="190" font-size="150" class="word">W</text>
+  <text x="569" y="190" font-size="150" class="word">D</text>
+  <text x="713" y="190" font-size="150" class="word">A</text>
+
+  <!-- Gold leaf accent above the J -->
+  <g transform="translate(196,70) rotate(-18)" fill="#D9B25F">
+    <path d="M0,0 Q 16,-34 42,-28 Q 38,6 10,14 Q -4,8 0,0 Z"/>
+    <path d="M2,3 Q 18,-14 36,-22" stroke="#F1D791" stroke-width="1.5" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Small sparkle between J and A -->
+  <path d="M338,150 L342,160 L352,164 L342,168 L338,178 L334,168 L324,164 L334,160 Z" fill="#D9B25F"/>
+
+  <!-- Gold leaf nestled between W and D -->
+  <g transform="translate(548,108) rotate(10)" fill="#D9B25F">
+    <path d="M0,0 Q 14,-26 34,-20 Q 30,8 8,12 Q -3,7 0,0 Z"/>
+  </g>
+
+  <!-- Small sparkle before final A -->
+  <path d="M660,145 L664,155 L674,159 L664,163 L660,173 L656,163 L646,159 L656,155 Z" fill="#D9B25F"/>
+
+  <!-- Arabic wordmark with flanking rules -->
+  <line x1="330" y1="240" x2="415" y2="240" stroke="#D9B25F" stroke-width="2"/>
+  <text x="500" y="252" font-size="46" text-anchor="middle" class="arabic">جَوْدَة</text>
+  <line x1="585" y1="240" x2="670" y2="240" stroke="#D9B25F" stroke-width="2"/>
+
+  <!-- Tagline -->
+  <text x="500" y="305" font-size="21" text-anchor="middle" letter-spacing="6" class="tag">QUALITY, MADE SIMPLE</text>
+</svg>
