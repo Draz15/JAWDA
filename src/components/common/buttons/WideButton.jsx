@@ -65,11 +65,13 @@ export default function WideButton({
             return;
           }
         }
-        if(!orderNumber) return
+        if (!orderNumber) return;
         const res = await startPayment(orderNumber, payment);
         setLoadingReview(false);
         emptyCart();
-        navigate(`/checkout/review/${orderNumber}`);
+        setTimeout(() => {
+          navigate(`/checkout/review/${orderNumber}`);
+        }, 5000);
       }
     } catch (error) {
       console.log(error?.message);

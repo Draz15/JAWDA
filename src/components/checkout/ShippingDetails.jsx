@@ -1,34 +1,36 @@
 import React, { useState } from "react";
 import { shippingSchema } from "../../utilities/DetailsValidation";
 
-const ShippingDetails = ({shippingData ,setShippingData ,setErrors,errors}) => {
+const ShippingDetails = ({
+  shippingData,
+  setShippingData,
+  setErrors,
+  errors,
+}) => {
+  const getData = (e) => {
+    // get the data form event target
+    const { name, value, type, checked } = e.target;
 
+    const newValue = type === "checkbox" ? checked : value;
 
-const getData = (e) => {
+    setShippingData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
 
-  // get the data form event target 
-  const { name, value, type, checked } = e.target;
-  
-  const newValue = type === "checkbox" ? checked : value;
+    // checking for the data entered
+    const fieldSchema = shippingSchema.shape[name];
+    const result = fieldSchema.safeParse(newValue);
 
-  setShippingData((prev) => ({
-    ...prev,
-    [name]: newValue,
-  }));
-  
-  // checking for the data entered  
-  const fieldSchema = shippingSchema.shape[name];
-  const result = fieldSchema.safeParse(newValue);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: result.success ? "" : result.error.issues[0].message,
+    }));
+  };
 
-  setErrors((prev) => ({
-    ...prev,
-    [name]: result.success ? "" : result.error.issues[0].message,
-  }));
-};
-
-  const submitData = (e)=> {
-    e.preventDefault()
-  }
+  const submitData = (e) => {
+    e.preventDefault();
+  };
 
   const inputStyle =
     "w-full py-2.5 text-xl border-b-[1.4px] outline-0 placeholder:text-xl placeholder:font-normal placeholder:text-[#c1c8c3] border-gray-300 focus:border-gray-700 transition-all duration-150";
@@ -70,10 +72,8 @@ const getData = (e) => {
             className={inputStyle}
           />
           {errors.fullname && (
-    <p className="text-red-500 text-xs mt-1">
-      {errors.fullname}
-    </p>
-  )}
+            <p className="text-red-500 text-xs mt-1">{errors.fullname}</p>
+          )}
         </div>
 
         {/* street address input field */}
@@ -93,6 +93,9 @@ const getData = (e) => {
             className={inputStyle}
             type="text"
           />
+          {errors.street && (
+            <p className="text-red-500 text-xs mt-1">{errors.street}</p>
+          )}
         </div>
 
         {/* city && postal code input field */}
@@ -105,13 +108,16 @@ const getData = (e) => {
               City
             </label>
             <input
-              id="City"
+              id="city"
               name="city"
               autoComplete="off"
               onChange={getData}
               placeholder="Cairo"
               className={inputStyle}
             />
+            {errors.city && (
+              <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+            )}
           </div>
 
           <div className="w-[48%]  space-y-1 ">
@@ -129,6 +135,9 @@ const getData = (e) => {
               placeholder="11511"
               className={inputStyle}
             />
+            {errors.postalCode && (
+              <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>
+            )}
           </div>
         </div>
 
@@ -148,6 +157,9 @@ const getData = (e) => {
             placeholder="+2010 1234 5678"
             className={inputStyle}
           />
+          {errors.phone && (
+            <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+          )}
         </div>
 
         {/* billing address input field */}
