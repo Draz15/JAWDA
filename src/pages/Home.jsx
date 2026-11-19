@@ -1,63 +1,74 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProduct } from "../context/ProductContext";
 import Navbar from "../layouts/Navbar";
 import Header from "../components/common/Header";
 import Categories from "../components/home/Categories";
 import BestSellers from "../components/home/BestSellers";
-import url from "../assets/media/img/wallpaper-one.jpg";
-import {CreateItems} from "../utilities/DataReturning.js";
+import url from "../assets/media/img/wallpaper-one.WebP";
+import { CreateItems } from "../utilities/DataReturning.js";
 import Quote from "../components/home/Quote.jsx";
 import Philosophy from "../components/home/Philosophy.jsx";
 import Footer from "../layouts/Footer.jsx";
+import Sidebar from "../layouts/Sidebar.jsx";
+import { useInView } from "react-intersection-observer";
+import { Toaster } from "react-hot-toast";
 
 const Home = () => {
-  const { state, dispatch } = useProduct();
+  const { state } = useProduct();
 
-  ///////////// start the initial state of the all products    //////////////
-  const [productsData, setProductsData] = useState([]);
-  const [jewelriesData, setJewelriesData] = useState([]);
-  const [walletsData, setWalletsData] = useState([]);
-  const [watchesData, setWatchesData] = useState([]);
-  const [sunglassesData, setSunglassesData] = useState([]);
-  const [handbagsData, setHandbagsData] = useState([]);
+  const { userFavorites:favorites} =state
+
+  // components animation section
+
+  const { ref: headerRef, inView: headerView } = useInView({
+    threshold: 0.7,
+    triggerOnce: true,
+  });
+
+  const { ref: quotesRef, inView: quotesView } = useInView({
+    threshold: 1,
+    triggerOnce: true,
+  });
 
   const { products, jewelries, handbags, watches, wallets, belts, sunglasses } =
     state;
 
-  useEffect(() => {
-    // destruction the requirement data from products
+  // destruction the requirement data from products
+  const productsData = useMemo(() => CreateItems(products), [products]);
 
-    setProductsData((prev) => [...prev, ...(CreateItems(products))]);
-    
-    // destruction the requirement data from sunglasses
-    setSunglassesData((prev) => [...prev, ...(CreateItems(sunglasses))]);
-    
-    // destruction the requirement data from handBags
-    setHandbagsData((prev) => [...prev, ...(CreateItems(handbags) )]);
-    
-    // destruction the requirement data from watches
-    setWatchesData((prev) => [...prev, ...(CreateItems(watches) )]);
-    
-    // destruction the requirement data from wallets
-    setWalletsData((prev) => [...prev, ...(CreateItems(wallets) )]);
-    
-    // destruction the requirement data from jewelries
-    setJewelriesData((prev) => [...prev, ...(CreateItems(jewelries))]);
+  // destruction the requirement data from sunglasses
+  const sunglassesData = useMemo(() => CreateItems(sunglasses), [sunglasses]);
 
-    // destruction the requirement data from belts
-  }, [products, sunglasses, jewelries, handbags, wallets, watches, belts]);
+  // destruction the requirement data from handBags
+  const handbagsData = useMemo(() => CreateItems(handbags), [handbags]);
+
+  // destruction the requirement data from watches
+  const watchesData = useMemo(() => CreateItems(watches), [watches]);
+
+  // destruction the requirement data from wallets
+  const walletsData = useMemo(() => CreateItems(wallets), [wallets]);
+
+  // destruction the requirement data from jewelries
+  const jewelriesData = useMemo(() => CreateItems(jewelries), [jewelries]);
 
   return (
     <React.Fragment>
       <Navbar />
-      <Header image={url} />
+      <Sidebar />
+      <Header image={url} headerRef={headerRef} headerView={headerView} />
       <main className="">
         <Categories />
-        <BestSellers productData ={productsData} sunglassData = {sunglassesData} watchData = {watchesData} jewelryData={jewelriesData}/>
-        <Quote/>
-        <Philosophy/>
+        <BestSellers
+          productData={productsData}
+          sunglassData={sunglassesData}
+          favorites={favorites}
+          watchData={watchesData}
+          jewelryData={jewelriesData}
+        />
+        <Quote quotesRef={quotesRef} iterSectionState={quotesView} />
+        <Philosophy />
       </main>
-      <Footer/>
+      <Footer />
     </React.Fragment>
   );
 };

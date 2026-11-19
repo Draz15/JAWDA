@@ -4,6 +4,8 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { TbSparkle2 } from "react-icons/tb";
 import { AiOutlineMinusCircle } from "react-icons/ai";
 import { BiLeaf } from "react-icons/bi";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
 
 const ProductHeader = ({ item }) => {
   // item returned data
@@ -60,20 +62,64 @@ const ProductHeader = ({ item }) => {
 
   useEffect(() => {
     setImages([image, ...(additionalImages || [])]);
-    console.log(description);
   }, [additionalImages, image]);
+
+  // Animation section
+  const sectionRef = useRef();
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 75%",
+          once: true,
+        },
+      });
+
+      tl.from(".main-product-image", {
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.8,
+        ease: "power2.out",
+      })
+        .from(
+          ".data",
+          {
+            opacity: 0,
+            y: 30,
+            duration: 0.7,
+            ease: "power2.out",
+          },
+          0.2,
+        )
+        .from(
+          ".leaf",
+          {
+            opacity: 0,
+            scale: 0.8,
+            duration: 0.6,
+          },
+          1.5,
+        );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   // start rendering the page
 
   return (
-    <header className="px-4 pt-28 pb-10 bg-[#fdf9f0]">
+    <header ref={sectionRef} className="px-4 pt-28 pb-10 bg-[#fdf9f0]">
       <div className="product-data flex justify-center items-start gap-x-6 px-5 pb-10 h-fit relative">
         {/* item images section container  */}
 
         <div className="images-container flex flex-col gap-y-10 w-[70%]">
           {/* main image holder  */}
 
-          <div className="group overflow-hidden w-full h-172 rounded-2xl border border-[#52634a] shadow-lg shadow-[#3a4236] hover:shadow-xl duration-300 transition-all">
+          <div className="main-product-image group group overflow-hidden w-full h-172 rounded-2xl border border-[#52634a] shadow-lg shadow-[#3a4236] hover:shadow-xl duration-300 transition-all">
             <img
               src={mainImage}
               alt={title}
@@ -98,7 +144,7 @@ const ProductHeader = ({ item }) => {
                       setIsChanging(false);
                     }, 200);
                   }}
-                  className="group cursor-pointer relative isolate h-80 overflow-hidden rounded-xl w-full border border-[#52634a] shadow-md shadow-[#3a4236]"
+                  className="img-holder group cursor-pointer relative isolate h-80 overflow-hidden rounded-xl w-full border border-[#52634a] shadow-md shadow-[#3a4236]"
                 >
                   <img
                     className=" object-cover object-center w-full h-full group-hover:scale-110 duration-300 transition-all"
@@ -176,7 +222,7 @@ const ProductHeader = ({ item }) => {
               className="cursor-pointer flex justify-center items-center gap-x-4 w-[90%] bg-[#2f4d41] border border-[#54826c] p-4 text-white text-xl hover:bg-[#233b32] duration-300 transition-all"
               type="button"
             >
-              <span className="">Add To Bag</span>
+              <span >Add To Bag</span>
               <RiShoppingBag3Fill />
             </button>
 

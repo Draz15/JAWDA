@@ -8,5 +8,5 @@ import tailwindcss from '@tailwindcss/vite'
       tailwindcss(),
       react()
     ],
-    base: '/JAWDA/',
+    base: '/',
 })

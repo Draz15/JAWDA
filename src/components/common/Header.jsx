@@ -1,19 +1,71 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa6";
-import gsap from 'gsap';
+import gsap from "gsap";
 
-const Header = ({ image }) => {
-    
-////////////////// handel animation section  //////////////////////
+const Header = ({ headerRef, headerView, image }) => {
+  ////////////////// handel animation section  //////////////////////
 
- const onEnter = (e)=> gsap.to(".icon", { x: 10, duration: 0.3 })
- const onLeave = (e)=> gsap.to(".icon", { x: 0, duration: 0.3 })
+  const onEnter = () => gsap.to(".icon", { x: 10, duration: 0.3 });
+  const onLeave = () => gsap.to(".icon", { x: 0, duration: 0.3 });
 
+  useEffect(() => {
+    if (!headerView) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
+
+      tl.from(".header-image", {
+        scale: 1.15,
+        duration: 2,
+        ease: "power2.out",
+      })
+        .from(
+          ".over-lay",
+          {
+            opacity: 0,
+            duration: 1.2,
+            ease: "power1.out",
+          },
+          0,
+        )
+        .from(
+          ".header-title",
+          {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          0.4,
+        )
+        .from(
+          ".header-description",
+          {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          0.8,
+        )
+        .from(
+          ".header-btn",
+          {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          1.3,
+        );
+    });
+
+    return () => ctx.revert();
+  }, [headerView]);
 
   return (
-    <header className="w-full h-screen relative">
-
-        {/* display image */}
+    <header ref={headerRef} className="w-full h-screen relative">
+      {/* display image */}
       <img
         src={image}
         className="w-full h-full object-top object-cover"
@@ -21,11 +73,9 @@ const Header = ({ image }) => {
       />
 
       <div className="over-lay flex items-center p-5 md:p-8 absolute top-0 lef-0 w-full h-full bg-[#fff79d3f]">
- 
- {/* start hero section  */}
+        {/* start hero section  */}
 
         <div className="header-content space-y-16 min-w-80">
-
           <div className="statements space-y-8 max-w-2xl">
             <h3 className="font-['Playfair'] tracking-wide md:tracking-wider text-3xl md:text-5xl text-[#ffedc4]">
               Quality, Made Simple.
@@ -36,12 +86,15 @@ const Header = ({ image }) => {
             </p>
           </div>
 
-          <button onMouseEnter={() => onEnter()}  onMouseLeave={() => onLeave()} className="header-btn flex gap-4 items-center justify-center text-xl font-medium cursor-pointer py-4 md:py-6 px-6 md:px-10 rounded-xl text-[#795500] bg-[#fff9ea]">
+          <button
+            onMouseEnter={() => onEnter()}
+            onMouseLeave={() => onLeave()}
+            className="header-btn flex gap-4 items-center justify-center text-xl font-medium cursor-pointer py-4 md:py-6 px-6 md:px-10 rounded-xl text-[#795500] bg-[#fff9ea]"
+          >
             <span className="">Explore The Archive</span>
             <FaArrowRight className="icon" />
           </button>
         </div>
-
       </div>
     </header>
   );

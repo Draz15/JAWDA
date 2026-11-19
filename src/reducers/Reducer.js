@@ -13,9 +13,8 @@ export const initialState = {
 
     /////////// user state /////
 
-    userCart: [],
-    userFavorites: [],
-    searchbar: false,
+    userFavorites: JSON.parse(localStorage.getItem("FavoriteProducts")) || [],
+    searchbar: JSON.parse(localStorage.getItem("searchbar")) ?? false,
     sidebar: false,
     nightMode: false,
 
@@ -207,10 +206,40 @@ export const reducer = (state, action) => {
             }
             break;
 
+        // add and remove from favorites cases 
+
+        case cases.ADD_PRODUCT_TO_FAVORITES: {
+
+            const newFavorites = [...state.userFavorites, action.payload];
+
+            localStorage.setItem("FavoriteProducts", JSON.stringify(newFavorites));
+
+            return {
+                ...state,
+                userFavorites: newFavorites,
+            };
+        }
+            break;
+
+        case cases.REMOVE_PRODUCT_FROM_FAVORITES: {
+            const newFavorites = state.userFavorites.filter(item => item?.itemId != action.payload?.itemId && item?.title != action.payload?.title)
+            localStorage.setItem("FavoriteProducts", JSON.stringify(newFavorites))
+
+            return {
+                ...state,
+                userFavorites: newFavorites
+            }
+        }
+            break;
+
 
         //////// open and close search and sidebar cases ///////
 
         case cases.CLICKED_SEARCH:
+
+            // save the current state of the searchbar
+            localStorage.setItem("searchbar", JSON.stringify(!state.searchbar))
+
             return {
                 ...state,
                 searchbar: !state.searchbar
@@ -223,7 +252,7 @@ export const reducer = (state, action) => {
                 sidebar: !state.sidebar
             }
             break;
-            
+
         case cases.CLICKED_NIGHT_MODE:
             return {
                 ...state,

@@ -1,8 +1,16 @@
-import React from "react";
-import { Link } from "react-router";
+import React, { useEffect, useRef, useState, memo } from "react";
+import { Link, useNavigate } from "react-router";
+import { CartProvider, useCart } from "react-use-cart";
 import { CiHeart } from "react-icons/ci";
+import { useAddToFavorites } from "../../utilities/AddFavorites";
+import gsap from "gsap";
+import { ToastMessage } from "../../utilities/ToastMessage.js";
 
-const Card = ({ item }) => {
+
+const Card = memo(({ item, isLCP,favorites }) => {
+  const active = "bg-[#52634a] text-white";
+  const { addItem } = useCart();
+  const navigate = useNavigate();
   const {
     itemId,
     title,
@@ -12,20 +20,57 @@ const Card = ({ item }) => {
     categories,
     additionalImages,
   } = item;
+  const {addToFavorites} = useAddToFavorites()
 
+  const [images, srtImages] = useState([image, ...(additionalImages || [])]);
+  const [currentImage, setCurrentImage] = useState(0);
+  useEffect(() => {
+    gsap.to(imgRef.current, {
+      left: 0,
+      duration: 1.3,
+      ease: "power1.in",
+      overwrite: true,
+    });
+  }, [currentImage]);
+
+  const imgRef = useRef(null);
+  const timeRef = useRef(null);
   return (
-    <Link
+    <div
       key={itemId}
-      to={`/jawda/collections/${itemId}`}
-      className="group overflow-hidden rounded-2xl border bg-[#f7f3ea] lg:min-w-68 lg:min-h-100 border-stone-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+      onMouseEnter={() => {
+        if (currentImage < images.length) {
+          timeRef.current = setInterval(() => {
+            if (images.length == 1) return;
+            setCurrentImage((prev) =>
+              prev >= images.length - 1 ? 0 : prev + 1,
+            );
+          }, 3000);
+        }
+      }}
+      onMouseLeave={() => {
+        clearInterval(timeRef.current);
+      }}
+      onDoubleClick={() => navigate(`/collections/${itemId}`)}
+      className="product-card group overflow-hidden rounded-2xl border bg-[#f7f3ea] lg:min-w-68 lg:min-h-100 border-stone-200 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
       {/* Product Image */}
       <div className="relative overflow-hidden bg-[#f7f5ef] h-60">
         <img
-          src={image?.imageUrl}
-          alt={title}
-          className="h-full w-full object-fit-cover object-center transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
+          alt={item?.title}
+          src={
+            images[currentImage === 0 ? images.length - 1 : currentImage - 1]
+              ?.imageUrl
+          }
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+
+        <img
+          key={currentImage}
+          ref={imgRef}
+          alt={item?.title}
+          src={images[currentImage]?.imageUrl}
+          className="absolute left-full h-full w-full object-cover"
         />
 
         {/* Condition */}
@@ -36,10 +81,21 @@ const Card = ({ item }) => {
         )}
 
         {/* Favorite Button */}
+
         <button
+          onClick={(e) => addToFavorites(item)}
           type="button"
           aria-label="Add to favorites"
-          className="absolute cursor-pointer right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#414845] text-xl shadow-sm transition-colors hover:bg-[#52634a] hover:text-white"
+          className={`like-btn absolute cursor-pointer right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full  text-xl shadow-sm transition-colors  ${
+            favorites?.some(
+              (el) =>
+                el.title == item?.title &&
+                el?.itemId == item?.itemId &&
+                el?.price?.value == item?.price?.value,
+            )
+              ? active
+              : "bg-white/90 text-[#414845] hover:bg-[#52634a] hover:text-white"
+          }`}
         >
           <CiHeart strokeWidth={1} />
         </button>
@@ -74,13 +130,20 @@ const Card = ({ item }) => {
 
         <button
           type="button"
+          onClick={() => {
+            addItem({ ...item, id: itemId });
+            ToastMessage(
+              "success",
+              `${item?.title?.split(" ").slice(0, 5).join(" ")} added successfully`,
+            );
+          }}
           className="w-full cursor-pointer rounded-xl bg-[#52634a] px-3 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-[#3e4b37] active:scale-[0.98]"
         >
           Add to cart
         </button>
       </div>
-    </Link>
+    </div>
   );
-};
+});
 
 export default Card;

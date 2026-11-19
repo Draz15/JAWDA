@@ -7,6 +7,7 @@ import Footer from "../layouts/Footer";
 import ProductHeader from "../components/productDetails/ProductHeader";
 import RelatedProducts from "../components/productDetails/RelatedProducts";
 import { initialState } from "../reducers/Reducer";
+import Sidebar from "../layouts/Sidebar";
 
 const Product = () => {
   const { id } = useParams();
@@ -26,7 +27,7 @@ const Product = () => {
 
         const data = await getProductData(id);
         if (!data) return;
-        const Product = await CreateItem(data)
+        const Product = CreateItem(data)
         setItem(Product);
 
         // fetch the related products Data        
@@ -34,8 +35,10 @@ const Product = () => {
         if (!category_id) return;
 
         const categoryData = await getRelatedData(category_id);
-        const categoryProducts = CreateItems(categoryData)
-        setCategory(categoryProducts);
+        if(Array.isArray(categoryData) && categoryData.length > 0){
+          const categoryProducts = CreateItems(categoryData)
+          setCategory(categoryProducts);
+        }
         
 
       } catch (error) {
@@ -55,6 +58,7 @@ const Product = () => {
   return (
     <>
       <Navbar />
+      <Sidebar/>
       <ProductHeader item={item} />
       <RelatedProducts Category={category} />
       <Footer />
